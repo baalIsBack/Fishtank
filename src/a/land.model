@@ -1,0 +1,7 @@
+local mesh = require("QuadMesh")
+local material = require("love2d-pixel-planets/components/planets/land_masses/land_masses.material")
+
+
+
+
+return {mesh, material}return {mesh, material}
