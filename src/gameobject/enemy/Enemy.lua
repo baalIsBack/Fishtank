@@ -24,6 +24,15 @@ function Self:init(x, y)
 	return self
 end
 
+function Self:destruct()
+	self.fixture:destroy()
+	self.body:destroy()
+	self.target:destroy()
+	self.body = nil
+	self.fixture = nil
+	self.target = nil
+end
+
 function Self:update(dt)
 	self.jobs:update(dt)
 	self:moveToTarget(dt)

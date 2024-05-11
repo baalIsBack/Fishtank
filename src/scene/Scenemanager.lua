@@ -4,10 +4,6 @@ local Scenemanager = Prototype:clone("Scenemanager")
 
 function Scenemanager:init()
 	local Scene_Game = require 'scene.Scene_Game'
-	local Scene_Menue = require 'scene.Scene_Menue'
-	local Scene_UI1 = require 'scene.Scene_UI1'
-	local Scene_UI2 = require 'scene.Scene_UI2'
-	local Scene_UI3 = require 'scene.Scene_UI3'
 
 	Prototype.init(self)
 
@@ -20,22 +16,6 @@ function Scenemanager:init()
 	self:register(Scene_Game:type(), scene_game) --TODO: fix: Must be initialized first
 	SET("Scene_Game", scene_game)
 	scene_game:init(self)
-
-	local scene_menue = Scene_Menue:new(self)
-	SET("Scene_Menue", scene_menue)
-	self:register(Scene_Menue:type(), scene_menue)
-
-	local scene_ui1 = Scene_UI1:new(self)
-	SET("Scene_UI1", scene_ui1)
-	self:register(Scene_UI1:type(), scene_ui1)
-
-	local scene_ui2 = Scene_UI2:new(self)
-	SET("Scene_UI2", scene_ui2)
-	self:register(Scene_UI2:type(), scene_ui2)
-
-	local scene_ui3 = Scene_UI3:new(self)
-	SET("Scene_UI3", scene_ui3)
-	self:register(Scene_UI3:type(), scene_ui3)
 
 	self.activeSceneId = Scene_Game:type()
 	self.scenes_prior = self.activeSceneId

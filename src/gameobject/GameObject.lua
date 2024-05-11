@@ -22,11 +22,16 @@ function Self:init(x, y)
 	self.w = 16 * self.sx
 	self.h = 16 * self.sy
 
+	self.damping = 0
+	self.body:setLinearDamping(self.damping)
+	self.body:setAngularDamping(0.7)
+
 	self.rotationModifier = 1
 	self.rotationalDamping = 5
 	self.linearDamping = 100
 	self.linearModifier = 150
 	self.distanceMovementShutoff = 8
+
 
 	self.target = love.physics.newBody(GET("World"), x, y, "kinematic")
 
@@ -120,6 +125,12 @@ function Self:getClosestEnemy()
 	end
 
 	return closestGameObject
+end
+
+function Self:drift(dt)
+	local vx, vy = self.body:getLinearVelocity()
+	local driftIncrement = (-vx) - DRIFT(timer)
+	self.body:applyLinearImpulse(driftIncrement, 0)
 end
 
 function Self:update(dt)

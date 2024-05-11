@@ -52,10 +52,11 @@ end
 
 local scenemanager
 
-FONT = love.graphics.newFont("assets/font/Weiholmir Standard/Weiholmir_regular.ttf", 16)
+--FONT = love.graphics.newFont("assets/font/Weiholmir Standard/Weiholmir_regular.ttf", 16)
 
-FONT:setFilter("nearest", "nearest")
+--FONT:setFilter("nearest", "nearest")
 
+--[[
 Prototype = require 'lua-additions.Prototype'
 cron = require 'lua-additions.cron'
 Jobs = require 'lua-additions.Jobs'
@@ -64,7 +65,6 @@ GameObject = require 'gameobject.GameObject'
 Explosion = require 'gameobject.Explosion'
 Gun = require 'gameobject.Gun'
 Starfield = require 'Starfield'
-Scenemanager = require 'scene.Scenemanager'
 Boosters = require 'gameobject.Boosters'
 Player = require 'gameobject.Player'
 Enemy = require 'gameobject.enemy.Enemy'
@@ -86,7 +86,19 @@ Robo = require 'gameobject.enemy.Robo'
 YellaFella = require 'gameobject.enemy.YellaFella'
 Scene_Game = require 'scene.Scene_Game'
 Scene_Menue = require 'scene.Scene_Menue'
-Hyperdrift = require 'Hyperdrift'
+Hyperdrift = require 'Hyperdrift']]
+
+Prototype = require 'lua-additions.Prototype'
+cron = require 'lua-additions.cron'
+Jobs = require 'lua-additions.Jobs'
+Callbackmanager = require 'lua-additions.Callbackmanager'
+GameObject = require 'gameobject.GameObject'
+Scenemanager = require 'scene.Scenemanager'
+
+timer = 0
+function DRIFT(x)
+	return math.log(x+1)*5
+end
 
 local FIXTURE_CATEGORYS = {}
 function FIXTURE_CATEGORY(str)
@@ -127,15 +139,15 @@ end
 
 function love.load()
 	love.graphics.setBackgroundColor(0, 0, 16 / 255)
-	love.graphics.setFont(FONT)
-	local UI_FONT = love.graphics.newFont("assets/font/spacecargo.ttf", math.floor(2 * 5))
+	--love.graphics.setFont(FONT)
+	--local UI_FONT = love.graphics.newFont("assets/font/spacecargo.ttf", math.floor(2 * 5))
 
 
 	SET("focus", true)
-	SET("BLOCK_SIZE_W", 12 * 2)
-	SET("BLOCK_SIZE_H", 12 * 2)
-	SET("PIXEL_SIZE_W", (UI_FONT:getWidth("a")) / 4)
-	SET("PIXEL_SIZE_H", (UI_FONT:getHeight()) / 5)
+	--SET("BLOCK_SIZE_W", 12 * 2)
+	--SET("BLOCK_SIZE_H", 12 * 2)
+	--SET("PIXEL_SIZE_W", (UI_FONT:getWidth("a")) / 4)
+	--SET("PIXEL_SIZE_H", (UI_FONT:getHeight()) / 5)
 
 	math.randomseed(os.time())
 
@@ -143,16 +155,16 @@ function love.load()
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 	SET("World", world)
 
-	SET(require("Statsheet"):new())
-	SET(require("Save"):new())
-	SET(require("Highscore"):new())
-	SET(require("Starfield"):new())
-	SET(require("Hyperdrift"):new())
-	SET(require("Conductor"):new())
-	SET(require("ShipInternals"):new())
-	SET(require("Map"):new())
-	SET("Cargo", require("Inventory"):new(6, 6, true))
-	SET("Hud", require("ui.Hud"):new())
+	--SET(require("Statsheet"):new())
+	--SET(require("Save"):new())
+	--SET(require("Highscore"):new())
+	---SET(require("Starfield"):new())
+	--SET(require("Hyperdrift"):new())
+	--SET(require("Conductor"):new())
+	--SET(require("ShipInternals"):new())
+	--SET(require("Map"):new())
+	--SET("Cargo", require("Inventory"):new(6, 6, true))
+	--SET("Hud", require("ui.Hud"):new())
 
 	scenemanager = Scenemanager:clone()
 	SET(scenemanager)
@@ -165,6 +177,7 @@ function love.load()
 end
 
 function love.update(dt)
+	timer = timer + dt
 	--  A:update(dt)
 	--GET(Keyboard:type()):update(dt)
 
@@ -190,22 +203,15 @@ end
 
 function love.draw()
 	--love.graphics.setBackgroundColor(0.4, 0.6, 0.4)
-	local canvas = love.graphics.newCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
-	love.graphics.setCanvas(canvas)
-	love.graphics.setColor(0, 0, 16 / 255)
-	love.graphics.rectangle("fill", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
-	love.graphics.setColor(1, 1, 1)
 	scenemanager:draw()
-	love.graphics.setCanvas()
-	love.graphics.draw(canvas, CANVAS_X, CANVAS_Y, 0, 2, 2)
 
 
 	GET("Debug"):draw()
 end
 
 function love.quit()
-	GET("Save"):save()
-	GET("Highscore"):write()
+	--GET("Save"):save()
+	--GET("Highscore"):write()
 
 
 	return false
