@@ -12,6 +12,7 @@ function Self:init(x, y)
 	self.callbacks:declare("collision")
 
 	self.body = love.physics.newBody(GET("World"), x, y, "dynamic")
+	self.body:setUserData(self)
 	self.body:setAngle(math.pi/2)
 	self.body:setAngularDamping(0.2)
 	--self.shape = nil

@@ -97,7 +97,7 @@ Scenemanager = require 'scene.Scenemanager'
 
 timer = 0
 function DRIFT(x)
-	return math.log(x+1)*5
+	return math.log(x/5+1)*30
 end
 
 local FIXTURE_CATEGORYS = {}
@@ -118,7 +118,6 @@ function FIXTURE_CATEGORY(str)
 end
 
 local function beginContact(a, b, coll)
-	
 end
 
 local function endContact(a, b, coll)
@@ -126,16 +125,41 @@ local function endContact(a, b, coll)
 end
 
 local function preSolve(a, b, coll)
+	
+	local aGameObject = a:getUserData()
+	local bGameObject = b:getUserData()
+	if aGameObject == GET("player") and bGameObject.isFish then
+		coll:setEnabled(false)
+		aGameObject.callbacks:call("collision", aGameObject, bGameObject)
+		bGameObject.callbacks:call("collision", bGameObject, aGameObject)
+	elseif bGameObject == GET("player") and aGameObject.isFish then
+		coll:setEnabled(false)
+		aGameObject.callbacks:call("collision", aGameObject, bGameObject)
+		bGameObject.callbacks:call("collision", bGameObject, aGameObject)
+	else
+		return
+	end
 
 end
-
-local function postSolve(a, b, coll, normalimpulse, tangentimpulse)
+SET("world_f", {})
+local function postSolve(a, b, coll, normal_impulse1, tangent_impulse1, normal_impulse2, tangent_impulse2)
 	local aGameObject = a:getUserData()
 	local bGameObject = b:getUserData()
 	aGameObject.callbacks:call("collision", aGameObject, bGameObject)
 	bGameObject.callbacks:call("collision", bGameObject, aGameObject)
+--	print(normal_impulse1, tangent_impulse1, normal_impulse2, tangent_impulse2)
+	
 end
 
+function resetWorld()
+	for i, v in ipairs(GET("World"):getBodies( )) do
+		if not v:getUserData() or v:getUserData().isPlayer then
+
+		else
+			v:destroy()
+		end
+	end
+end
 
 function love.load()
 	love.graphics.setBackgroundColor(0, 0, 16 / 255)
@@ -157,7 +181,7 @@ function love.load()
 
 	--SET(require("Statsheet"):new())
 	--SET(require("Save"):new())
-	--SET(require("Highscore"):new())
+	SET(require("Highscore"):new())
 	---SET(require("Starfield"):new())
 	--SET(require("Hyperdrift"):new())
 	--SET(require("Conductor"):new())
@@ -177,7 +201,7 @@ function love.load()
 end
 
 function love.update(dt)
-	timer = timer + dt
+	
 	--  A:update(dt)
 	--GET(Keyboard:type()):update(dt)
 
@@ -211,7 +235,7 @@ end
 
 function love.quit()
 	--GET("Save"):save()
-	--GET("Highscore"):write()
+	GET("Highscore"):write()
 
 
 	return false

@@ -12,12 +12,46 @@ local quads = {
 	love.graphics.newQuad(1*8, 1*8, 8, 8, TILESET),
 }
 
+local FONT = love.graphics.newFont("assets/fonts/Weiholmir_regular.ttf", 40)
+
+function Scene_Game:reset()
+	SET("driftspeed", 0)
+	SET("isPlaying", false)
+	local oldplayer = GET("player")
+
+	local x, y = oldplayer.body:getX(), oldplayer.body:getY()
+
+	resetWorld()
+	self.world = GET("World")
+	self.objects = {}
+	SET("OBJECTS", self.objects)
+	table.insert(self.objects, oldplayer)
+	table.insert(self.objects, require("gameobject.StartBubble"):new(200, 100))
+	table.insert(self.objects, require("gameobject.ExitBubble"):new(50, 100))
+	SET("trashmod", 1)
+	SET("points", 0)
+	timer = 0
+	table.insert(self.objects, require("gameobject.Wall"):new(love.graphics.getWidth()/8, 0+16))
+	table.insert(self.objects, require("gameobject.Wall"):new(love.graphics.getWidth()/8, 16+20.5*8))
+TRASH_COUNTER = 0
+FISH_COUNTER = 0
+end
+
 function Scene_Game:init(manager)
 	Scene.init(self, manager)
+	TRASH_COUNTER = 0
+	FISH_COUNTER = 0
 
+	self.music = love.audio.newSource("assets/sfx/mixkit-sea-waves-loop-1196.wav", "static")
+	self.music:setLooping(true)
+	self.music:play()
+	self.music:setVolume(0.01)
 
+	SET("SCENE", self)
+
+	love.graphics.setFont(FONT)
 	SET("driftspeed", 0)
-	SET("isPlaying", true)
+	SET("isPlaying", false)
 
 	self.world = GET("World")
 
@@ -28,9 +62,18 @@ function Scene_Game:init(manager)
 	self.scroll_x = 0
 
 	table.insert(self.objects, require("gameobject.Player"):new(100, 100))
+	table.insert(self.objects, require("gameobject.StartBubble"):new(200, 100))
+	table.insert(self.objects, require("gameobject.ExitBubble"):new(50, 100))
+	SET("trashmod", 1)
+	SET("points", 0)
 
-	
-	
+
+	table.insert(self.objects, require("gameobject.Wall"):new(love.graphics.getWidth()/8, 0+16))
+	table.insert(self.objects, require("gameobject.Wall"):new(love.graphics.getWidth()/8, 16+20.5*8))
+
+	--table.insert(self.objects, require("gameobject.Fish"):new( 200,100 ))
+	--table.insert(self.objects, require("gameobject.Player"):new(100, 100))
+
 	self.canvas2 = love.graphics.newCanvas(love.graphics.getWidth()/4, love.graphics.getHeight()/4)
 end
 
@@ -56,37 +99,87 @@ end
 function Scene_Game:draw()
 	--love.graphics.scale(4, 4)
 
-
-	
-	
-	love.graphics.setCanvas(self.canvas2)
-	love.graphics.clear()
-
-	love.graphics.draw(self.canvas, (self.scroll_x)%(love.graphics.getWidth()/4))
-	love.graphics.draw(self.canvas, (self.scroll_x)%(love.graphics.getWidth()/4) - love.graphics.getWidth()/4)
-
-
-	for i, v in ipairs(self.objects) do
-  	v:draw()
-	end
-	love.graphics.setCanvas()
-	love.graphics.draw(self.canvas2, 0, 0, 0, 4, 4)
-end
-TRASH_COUNTER = 0
-FISH_COUNTER = 0
-function Scene_Game:update(dt)
 	if GET("isPlaying") then
-		local driftspeed = GET("driftspeed")
-		driftspeed = DRIFT(timer)
-		SET("driftspeed", driftspeed)
-		TRASH_COUNTER = TRASH_COUNTER + driftspeed * dt
-		FISH_COUNTER = FISH_COUNTER + driftspeed * dt
+	
+	
+		love.graphics.setCanvas(self.canvas2)
+		love.graphics.clear()
 
-		local trash_size = driftspeed
-		if TRASH_COUNTER > trash_size then
+		love.graphics.draw(self.canvas, (self.scroll_x)%(love.graphics.getWidth()/4))
+		love.graphics.draw(self.canvas, (self.scroll_x)%(love.graphics.getWidth()/4) - love.graphics.getWidth()/4)
+
+
+		for i, v in ipairs(self.objects) do
+	  	v:draw()
+		end
+		love.graphics.setCanvas()
+		love.graphics.draw(self.canvas2, 0, 0, 0, 4, 4)
+
+		local points = math.floor(GET("points")/10)
+		local highscore = math.floor(GET("Highscore").score/10)
+		if points == highscore then
+			love.graphics.setColor(190/255, 150/255, 35/255, 0.6)
+			love.graphics.setColor(10/255, 10/255, 15/255, 0.6)
+		else
+			love.graphics.setColor(30/255, 30/255, 35/255, 0.4)
+		end
+		love.graphics.print(points .. "$", 10, 13, 0, 1, 1)
+		love.graphics.print("Best " .. highscore .. "$", 700, 13, 0, 1, 1)
+		love.graphics.setColor(1, 1, 1)
+	else
+		love.graphics.setCanvas(self.canvas2)
+		love.graphics.clear()
+
+		love.graphics.draw(self.canvas, (self.scroll_x)%(love.graphics.getWidth()/4))
+		love.graphics.draw(self.canvas, (self.scroll_x)%(love.graphics.getWidth()/4) - love.graphics.getWidth()/4)
+
+
+		for i, v in ipairs(self.objects) do
+	  	v:draw()
+		end
+		love.graphics.setCanvas()
+		love.graphics.draw(self.canvas2, 0, 0, 0, 4, 4)
+
+		local points = math.floor(GET("points")/10)
+		local highscore = math.floor(GET("Highscore").score/10)
+		if points == highscore then
+			love.graphics.setColor(190/255, 150/255, 35/255, 0.6)
+			love.graphics.setColor(10/255, 10/255, 15/255, 0.6)
+		else
+			love.graphics.setColor(30/255, 30/255, 35/255, 0.4)
+		end
+		--love.graphics.print(points .. "$", 10, 13, 0, 1, 1)
+		love.graphics.print("Best " .. highscore .. "$", 700, 13, 0, 1, 1)
+		love.graphics.setColor(1, 1, 1)
+	end
+end
+
+
+function Scene_Game:update(dt)
+	local driftspeed = GET("driftspeed")
+	driftspeed = DRIFT(timer)
+	local trashmod = GET("trashmod")
+	
+	if GET("isPlaying") then
+		timer = timer + dt
+		SET("driftspeed", driftspeed)
+		if trashmod < 1 then
+			TRASH_COUNTER = TRASH_COUNTER + (1-(trashmod)) * math.pow(driftspeed, 1.5) * dt * 7/1.5
+		end
+		FISH_COUNTER = FISH_COUNTER + (trashmod) * math.pow(driftspeed, 1.5) * dt * 2/5
+		if trashmod > 0 then
+			SET("trashmod", math.min(trashmod + 0.001*dt, 1))
+		else
+			trashmod = 0
+		end
+
+		local trash_size = driftspeed*5
+		local a = math.floor(TRASH_COUNTER / trash_size)
+		if a >= 1 then
 			local x, y = 4 + love.graphics.getWidth()/4, math.random(32, love.graphics.getWidth()/4 - 156)
 			table.insert(self.objects, require("gameobject.Trash"):new( x, y ))
-			TRASH_COUNTER = TRASH_COUNTER - trash_size
+			TRASH_COUNTER = TRASH_COUNTER % trash_size
+
 		end
 
 
@@ -98,8 +191,13 @@ function Scene_Game:update(dt)
 		end
 	end
 
+	------
 	self.scroll_x = self.scroll_x - GET("driftspeed")*dt
 	self.world:update(dt)
+	for i, v in ipairs(GET("world_f")) do
+		v.f(unpack(v.args))
+	end
+	SET("world_f", {})
 	for i, gameObject in ipairs(self.objects) do
 		gameObject:update(dt)
 	end
@@ -108,18 +206,25 @@ function Scene_Game:update(dt)
 	for i=#self.objects, 1, -1 do
 		gameObject = self.objects[i]
 		if gameObject.DEATH == true then
-			gameObject.DEATH = -1
-			gameObject.DESTROY = true --TODO make destroy contain the destroyer
-			gameObject.callbacks:call("death", gameObject)
-			table.remove(self.objects, i)
-			gameObject:destruct()
+			if gameObject.isPlayer then
+				self:reset()
+				gameObject.DEATH = nil
+			else
+				gameObject.DEATH = -1
+				gameObject.DESTROY = true --TODO make destroy contain the destroyer
+				gameObject.callbacks:call("death", gameObject)
+				table.remove(self.objects, i)
+				gameObject:destruct()
+			end
 		end
 	end
+
+	
 
 
 	if love.keyboard.isDown("k") then
 		if not self.wasDown then
-			print("k")
+			--print("k")
 		end
 		self.wasDown = true
 	else
@@ -129,7 +234,6 @@ function Scene_Game:update(dt)
 	if love.mouse.isDown(1) then
 		local mx, my = love.mouse.getPosition()
 
-		print(mx/4, my/4)
 	end
 
 

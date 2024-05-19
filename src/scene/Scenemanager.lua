@@ -37,7 +37,7 @@ function Scenemanager:draw()
 end
 
 function Scenemanager:update(dt)
-	if love.keyboard.isDown("f") then
+	if false and love.keyboard.isDown("f") then
 		if not self.wasDown then
 			self:toggleUI()
 		end

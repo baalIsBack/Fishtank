@@ -4,11 +4,16 @@ local Self = Super:clone("Trash")
 Self.shape = love.physics.newCircleShape(3)
 
 Self.imgs = {
-	love.graphics.newImage("assets/gfx/tin_cant.png"),
-	love.graphics.newImage("assets/gfx/fishbone.png"),
-	love.graphics.newImage("assets/gfx/trashbag1.png"),
-	love.graphics.newImage("assets/gfx/trashbag2.png"),
-	love.graphics.newImage("assets/gfx/fishbone2.png"),
+	--love.graphics.newImage("assets/gfx/tin_cant.png"),
+	--love.graphics.newImage("assets/gfx/fishbone.png"),
+	--love.graphics.newImage("assets/gfx/trashbag1.png"),
+	--love.graphics.newImage("assets/gfx/trashbag2.png"),
+	love.graphics.newImage("assets/gfx/winebottle.png"),
+	love.graphics.newImage("assets/gfx/cup.png"),
+	love.graphics.newImage("assets/gfx/cig.png"),
+	love.graphics.newImage("assets/gfx/cokecan.png"),
+	--love.graphics.newImage("assets/gfx/fishbone2.png"),
+	love.graphics.newImage("assets/gfx/fishbone5.png"),
 }
 
 function Self:init(x, y)
@@ -22,8 +27,9 @@ function Self:init(x, y)
 
 	self.body:applyLinearImpulse(-GET("driftspeed") *100, 0)
 	local accuracy = 1000
-	self.body:setAngle(math.random(0, 2*math.pi*accuracy)/accuracy)
+	self.body:setAngle(math.random(0, 4)*1/2*math.pi)
 	self.body:setAngularDamping(1000)
+	self.body:setLinearDamping(0.6)
 	--self.body:setFixedRotation(true)
 	self.killsPlayer = true
 
