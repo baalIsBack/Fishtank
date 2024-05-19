@@ -1,8 +1,0 @@
-local mesh = require("QuadMesh")
-local material = require("love2d-pixel-planets/components/planets/dry_terran/dry_terran.material")
-mesh:setTexture(love2d-pixel-planets/components/planets/dry_terran/dry_terran.png)
-
-
-
-
-return {mesh, material}return {mesh, material}

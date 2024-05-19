@@ -1,7 +1,0 @@
-local mesh = require("QuadMesh")
-local material = require("love2d-pixel-planets/components/planets/rivers/clouds.material")
-
-
-
-
-return {mesh, material}return {mesh, material}
