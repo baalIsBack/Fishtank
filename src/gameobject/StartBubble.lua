@@ -10,6 +10,7 @@ function Self:init(x, y)
 	Super.init(self, x, y)
 
 
+	self.bubble = true
 	
 	self.body:setMass(100)
 
@@ -54,12 +55,15 @@ end
 function Self:draw()
 	--love.graphics.draw(self.img, math.floor(self.body:getX()), math.floor(self.body:getY()), math.pi-self.body:getAngle(), 1, 1, 4, 4)
 	--love.graphics.setColor(16/255, 115/255, 235/255, 1)
+	love.graphics.setFont(FONT2)
 	local x, y = (self.body:getX()), (self.body:getY()) + math.sin(self.counter)*3
 	--love.graphics.circle("line", x, y, 10, 44)
 	love.graphics.setColor(1, 1, 1)
-	love.graphics.print("GO!", ROUND(x-6), ROUND(y-12), 0, 1/7, 1/7)
+	love.graphics.print("GO!", (x-6), (y-10), 0, 1/4, 1/4)
 
 	love.graphics.draw(self.img, x-4, y-4)
+
+	love.graphics.setFont(FONT)
 end
 
 return Self

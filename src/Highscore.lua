@@ -21,7 +21,7 @@ end
 
 function Highscore:read()
   local contents, size = love.filesystem.read(self.filename)
-  self.score = 1000--math.floor(contents or 0)--tonumber
+  self.score = math.floor(contents or 0)--tonumber
   return self.score
 end
 

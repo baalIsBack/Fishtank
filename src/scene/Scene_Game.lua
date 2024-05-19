@@ -12,7 +12,8 @@ local quads = {
 	love.graphics.newQuad(1*8, 1*8, 8, 8, TILESET),
 }
 
-local FONT = love.graphics.newFont("assets/fonts/Weiholmir_regular.ttf", 40)
+FONT = love.graphics.newFont("assets/fonts/Weiholmir_regular.ttf", 80)
+FONT2 = love.graphics.newFont("assets/fonts/Weiholmir_regular.ttf", 20)
 
 function Scene_Game:reset()
 	SET("driftspeed", 0)
@@ -28,13 +29,17 @@ function Scene_Game:reset()
 	table.insert(self.objects, oldplayer)
 	table.insert(self.objects, require("gameobject.StartBubble"):new(200, 100))
 	table.insert(self.objects, require("gameobject.ExitBubble"):new(50, 100))
+	table.insert(self.objects, require("gameobject.CreditBubble"):new(30, 50))
 	SET("trashmod", 1)
 	SET("points", 0)
 	timer = 0
 	table.insert(self.objects, require("gameobject.Wall"):new(love.graphics.getWidth()/8, 0+16))
 	table.insert(self.objects, require("gameobject.Wall"):new(love.graphics.getWidth()/8, 16+20.5*8))
-TRASH_COUNTER = 0
-FISH_COUNTER = 0
+	TRASH_COUNTER = 0
+	FISH_COUNTER = 0
+
+		
+
 end
 
 function Scene_Game:init(manager)
@@ -64,6 +69,7 @@ function Scene_Game:init(manager)
 	table.insert(self.objects, require("gameobject.Player"):new(100, 100))
 	table.insert(self.objects, require("gameobject.StartBubble"):new(200, 100))
 	table.insert(self.objects, require("gameobject.ExitBubble"):new(50, 100))
+	table.insert(self.objects, require("gameobject.CreditBubble"):new(30, 50))
 	SET("trashmod", 1)
 	SET("points", 0)
 
@@ -75,6 +81,9 @@ function Scene_Game:init(manager)
 	--table.insert(self.objects, require("gameobject.Player"):new(100, 100))
 
 	self.canvas2 = love.graphics.newCanvas(love.graphics.getWidth()/4, love.graphics.getHeight()/4)
+
+
+		
 end
 
 function Scene_Game:createCanvas()
@@ -123,8 +132,8 @@ function Scene_Game:draw()
 		else
 			love.graphics.setColor(30/255, 30/255, 35/255, 0.4)
 		end
-		love.graphics.print(points .. "$", 10, 13, 0, 1, 1)
-		love.graphics.print("Best " .. highscore .. "$", 700, 13, 0, 1, 1)
+		love.graphics.print(points .. "$", 10, 13, 0, 1/2, 1/2)
+		love.graphics.print("Best " .. highscore .. "$", 700, 13, 0, 1/2, 1/2)
 		love.graphics.setColor(1, 1, 1)
 	else
 		love.graphics.setCanvas(self.canvas2)
@@ -135,10 +144,21 @@ function Scene_Game:draw()
 
 
 		for i, v in ipairs(self.objects) do
-	  	v:draw()
+			if not v.bubble then
+		  	v:draw()
+		  end
 		end
 		love.graphics.setCanvas()
 		love.graphics.draw(self.canvas2, 0, 0, 0, 4, 4)
+
+		for i, v in ipairs(self.objects) do
+			if v.bubble then
+				love.graphics.push()
+				love.graphics.scale(4, 4)
+		  	v:draw()
+				love.graphics.pop()
+		  end
+		end
 
 		local points = math.floor(GET("points")/10)
 		local highscore = math.floor(GET("Highscore").score/10)
@@ -149,7 +169,7 @@ function Scene_Game:draw()
 			love.graphics.setColor(30/255, 30/255, 35/255, 0.4)
 		end
 		--love.graphics.print(points .. "$", 10, 13, 0, 1, 1)
-		love.graphics.print("Best " .. highscore .. "$", 700, 13, 0, 1, 1)
+		love.graphics.print("Best " .. highscore .. "$", 700, 13, 0, 1/2, 1/2)
 		love.graphics.setColor(1, 1, 1)
 	end
 end
